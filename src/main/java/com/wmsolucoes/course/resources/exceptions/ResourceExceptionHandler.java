@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.wmsolucoes.course.services.exceptions.DatabaseException;
 import com.wmsolucoes.course.services.exceptions.ResourceNotFoundException;
 
 // anotacao para interceptar as excecoes que acontecerem para que esse objeto possa executar um possivel tratamento
@@ -23,4 +24,13 @@ public class ResourceExceptionHandler {
 		StandardError err = new StandardError(Instant.now(), status.value(), error, e.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
+	
+	// anotation para dizer que o meu metodo database vai interceptar qualquer excecao do tipo DatabaseException e fazer o tratamento
+		@ExceptionHandler(DatabaseException.class)
+		public ResponseEntity<StandardError> database(DatabaseException e, HttpServletRequest request){
+			String error = "Database error";
+			HttpStatus status = HttpStatus.BAD_REQUEST;
+			StandardError err = new StandardError(Instant.now(), status.value(), error, e.getMessage(), request.getRequestURI());
+			return ResponseEntity.status(status).body(err);
+		}
 }
